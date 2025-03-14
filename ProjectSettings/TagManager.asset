@@ -24,8 +24,8 @@ TagManager:
   - PlayerBullet
   - BulletCase
   - Wall
-  - 
-  - 
+  - Enemy
+  - EnemyDead
   - 
   - 
   - 
