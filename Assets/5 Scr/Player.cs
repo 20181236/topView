@@ -42,6 +42,7 @@ public class Player : MonoBehaviour
     bool isReload;
     bool isFireReady = true;
     bool isBorder;
+    bool isDamage;
 
     Vector3 moveVec;
     Vector3 dodgeVec;
@@ -49,6 +50,7 @@ public class Player : MonoBehaviour
     Rigidbody rigid;
 
     Animator anim;
+    MeshRenderer[] meshs;
 
     GameObject nearObject;
     Weapon equipWeapon;
@@ -60,6 +62,7 @@ public class Player : MonoBehaviour
     {
         rigid = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
+        meshs = GetComponentsInChildren<MeshRenderer>();
     }
     // Start is called before the first frame update
     void Start()
@@ -374,6 +377,39 @@ public class Player : MonoBehaviour
                     break;
             }
             Destroy(other.gameObject);
+        }
+        else if (other.tag == "EnemyBullet")
+        {
+            if (!isDamage)
+            {
+                Bullet enemyBullet = other.GetComponent<Bullet>();
+                health -= enemyBullet.damage;
+
+                if(other.GetComponent<Rigidbody>() != null)
+                {
+                    Destroy(other.gameObject);
+                }
+
+                StartCoroutine(OnDamage());
+            }
+        }
+    }
+
+    IEnumerator OnDamage()
+    {
+        Debug.Log("Demaged");
+        //yield return new WaitForSeconds(1f);//OnlyEnemyAMotion?
+        isDamage = true;
+        foreach (MeshRenderer mesh in meshs)
+        {
+            mesh.material.color = Color.red;
+        }
+        yield return new WaitForSeconds(1f);//Why New -> "WaitForSeconds is a regular C# class."
+
+        isDamage = false;
+        foreach (MeshRenderer mesh in meshs)
+        {
+            mesh.material.color = Color.white;
         }
     }
 
