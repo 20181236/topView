@@ -385,17 +385,18 @@ public class Player : MonoBehaviour
                 Bullet enemyBullet = other.GetComponent<Bullet>();
                 health -= enemyBullet.damage;
 
-                if(other.GetComponent<Rigidbody>() != null)
-                {
-                    Destroy(other.gameObject);
-                }
+                bool isBossAtk = other.name == "Boss Melee Area";
+                StartCoroutine(OnDamage(isBossAtk));
+            }
 
-                StartCoroutine(OnDamage());
+            if (other.GetComponent<Rigidbody>() != null)
+            {
+                Destroy(other.gameObject);
             }
         }
     }
 
-    IEnumerator OnDamage()
+    IEnumerator OnDamage(bool isBossAtk)
     {
         Debug.Log("Demaged");
         //yield return new WaitForSeconds(1f);//OnlyEnemyAMotion?
@@ -404,12 +405,22 @@ public class Player : MonoBehaviour
         {
             mesh.material.color = Color.red;
         }
+
+        if(isBossAtk)
+        {
+            rigid.AddForce(transform.forward * -25,ForceMode.Impulse);
+        }
         yield return new WaitForSeconds(1f);//Why New -> "WaitForSeconds is a regular C# class."
 
         isDamage = false;
         foreach (MeshRenderer mesh in meshs)
         {
             mesh.material.color = Color.white;
+        }
+
+        if (isBossAtk)
+        {
+            rigid.velocity = Vector3.zero;
         }
     }
 
